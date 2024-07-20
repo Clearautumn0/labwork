@@ -1,0 +1,75 @@
+usertype text;
+usertype Timestamp;
+hashfunction H;
+
+protocol KYRZ(A1,DB,NP1)
+{
+   role A1
+   {
+     fresh Ta1: Timestamp;
+     var Tdb2: Timestamp;
+     fresh R,g,PK,y,pw,NA1,QA,y,QDB,TIDdb: Nonce;
+     var TIDa,h,mdb: text;
+     var NDB2,Z:Nonce;
+     fresh e,m,w,ma1:text;
+     match(e,H(R,PK,m) );
+     match(TIDa,H(A1,g));
+     match(w,H(TIDa,pw) );
+     match(ma1,H(TIDa,TIDdb,w,Ta1,NA1,pk(A1),QA,e,y,m));
+     send_!Ta1(A1,A1,Ta1);
+     send_1(A1,DB,{TIDa,DB,w,Ta1,NA1,y,ma1,QA}pk(DB) );
+     recv_4(DB,A1,{NP1,DB,Z,Tdb2,NDB2,NA1,h,QDB,mdb}pk(A1) );
+
+     claim(A1,Secret,Ta1);
+     claim(A1,Alive);
+     claim(A1,Weakagree);
+     claim(A1,Niagree);
+     claim(A1,Nisynch);
+     }
+
+    role DB
+    {
+      fresh Tdb1,Tdb2: Timestamp;
+      var Ta1,Tnp1: Timestamp;
+      var TIDa,w,ma1,h: text;
+      fresh QDB,NDB1,NDB2,Z: Nonce;
+      fresh mdb: text;
+      var NA1,y,QA: Nonce;
+      recv_1(A1,DB,{TIDa,DB,w,Ta1,NA1,y,ma1,QA}pk(DB) );
+      send_!Tdb1(DB,DB,Tdb1);
+      send_2(DB,NP1,{DB,NP1,Tdb1,NDB1,QA}pk(NP1) );
+      recv_3(NP1,DB,{NP1,DB,Tnp1,NDB1,h,QDB}pk(DB) );
+      match(mdb,H(NP1,DB,Z,Tdb2,NDB2,NA1,pk(DB),pk(NP1),h,QDB));
+      send_4(DB,A1,{NP1,DB,Z,Tdb2,NDB2,NA1,h,QDB,mdb}pk(A1) );
+
+      claim(DB,Secret,Tdb1);
+
+      claim(DB,Secret,Tdb2);
+      claim(DB,Alive);
+      claim(DB,Weakagree);
+      claim(DB,Niagree);
+      claim(DB,Nisynch);
+     }
+
+     role NP1
+     {
+       fresh Tnp1: Timestamp;
+       var Tdb1: Timestamp;
+       var TIDa,w: text;
+       fresh h: text;
+
+       fresh QDB:Nonce;
+       var NDB1,QA: Nonce;
+       recv_2(DB,NP1,{DB,NP1,Tdb1,NDB1,QA}pk(NP1) );
+       match(h,H(NP1));
+       send_!Tnp1(NP1,NP1,Tnp1);
+       send_3(NP1,DB,{NP1,DB,Tnp1,NDB1,h,QDB}pk(DB) );
+
+       claim(NP1,Secret,Tnp1);
+       claim(NP1,Alive);
+       claim(NP1,Weakagree);
+       claim(NP1,Niagree);
+       claim(NP1,Nisynch);
+      }
+}
+
